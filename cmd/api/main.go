@@ -2,12 +2,14 @@ package main
 
 import (
 	"log"
+
+	"github.com/iyilmaz24/Go-Analytics-Server/internal/env"
 )
 
 
 func main() {
 	cfg := config{
-		addr: ":8080",
+		addr:  env.GetString("ADDR", ":8080"),
 	}
 
 	app := &application{
