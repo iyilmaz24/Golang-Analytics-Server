@@ -8,6 +8,7 @@ import (
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/config"
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database"
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database/models"
+	geo "github.com/iyilmaz24/Go-Analytics-Server/internal/services"
 	_ "github.com/lib/pq"
 )
 
@@ -30,10 +31,16 @@ func main() {
 	}
 	defer db.Close()
 
+	geo := &geo.Geo{
+		Api: "https://apip.cc/api-json/",
+		ErrorLog: errorLog,
+		InfoLog: infoLog,
+	}
+
 	app := &application{
 		errorLog: errorLog,
 		infoLog: infoLog,
-		stats: &models.StatModel{DB: db},
+		stats: &models.StatModel{DB: db, Geo: geo},
 	}
 
 	srv := &http.Server{

@@ -6,10 +6,12 @@ import (
 
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database"
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database/types"
+	geo "github.com/iyilmaz24/Go-Analytics-Server/internal/services"
 )
 
 type StatModel struct {
 	DB *sql.DB
+	Geo *geo.Geo
 }
 
 func (sm *StatModel) GetUserStats(id string) (*types.UserStat, error) {
@@ -46,7 +48,7 @@ func (sm *StatModel) GetAppStats() (*types.AppStatsAggregate, error) {
 	return s, nil
 }
 
-func (sm *StatModel) UpsertAppStats(s *types.AppStats) error {
+func (sm *StatModel) UpdateAppStats(s *types.AppStats) error {
 	AppStatsAggregate, err := sm.GetAppStats()
 	if err != nil {
 		return err
@@ -72,7 +74,24 @@ func (sm *StatModel) UpsertAppStats(s *types.AppStats) error {
 }
 
 func (sm *StatModel) UpsertUserStats(s *types.UserStat) error {
-	// add logic here
+	user, err := sm.GetUserStats(s.Ip)
+
+	devices := s.Devices
+	location := s.Location
+
+	if err != nil { // user does not exist
+		location = sm.Geo.GetGeoLocation(s.Ip)
+
+	} else { // user exists
+		location = user.Location
+		devices = append(devices, user.Devices...) // combine existing and new devices
+	}
+
+	sqlQuery := database.UpsertUserStatsSQL()
+	_, err = sm.DB.Exec(sqlQuery, s.Ip, location, s.VD_WebApp, s.FL_Portal, s.NM_Portal, s.TotalVisits, devices, s.FirstAccess, s.LastAccess)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
