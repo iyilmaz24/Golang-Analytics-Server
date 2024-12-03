@@ -8,6 +8,7 @@ import (
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/config"
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database"
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database/models"
+	_ "github.com/lib/pq"
 )
 
 type application struct {

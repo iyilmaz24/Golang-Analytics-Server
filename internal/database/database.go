@@ -7,6 +7,8 @@ import (
 
 func OpenDB(dsn string) (*sql.DB, error) {
 
+	return nil, nil
+
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
