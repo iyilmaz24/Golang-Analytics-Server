@@ -18,10 +18,10 @@ type Device struct {
 // 	VDWebAppVisits: 10,
 // 	FLPortalVisits: 5,
 // 	NMPortalVisits: 3,
+// 	TotalVisits:   18,
 // 	Devices:       devices,
 // 	FirstAccess:   time.Now().Add(-30 * 24 * time.Hour), // 30 days ago
 // 	LastAccess:    time.Now(),
-// 	TotalVisits:   18,
 // }
 type UserStat struct {
 	Ip  string

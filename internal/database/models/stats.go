@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database"
+	"github.com/iyilmaz24/Go-Analytics-Server/internal/database/helpers"
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/database/types"
 	geo "github.com/iyilmaz24/Go-Analytics-Server/internal/services"
 )
@@ -73,22 +74,27 @@ func (sm *StatModel) UpdateAppStats(s *types.AppStats) error {
 	return nil
 }
 
-func (sm *StatModel) UpsertUserStats(s *types.UserStat) error {
-	user, err := sm.GetUserStats(s.Ip)
+func (sm *StatModel) UpsertUserStats(s *types.UserStat, region string) error {
+
+	anonId := helpers.GetAnonymousID(s.Ip, region)
+	user, err := sm.GetUserStats(anonId)
 
 	devices := s.Devices
 	location := s.Location
 
-	if err != nil { // user does not exist
-		location = sm.Geo.GetGeoLocation(s.Ip)
-
+	if err != nil { 
+		if errors.Is(err, ErrNoRecord) { // user does not exist
+			location = sm.Geo.GetGeoLocation(s.Ip) // create new user location
+		} else { // other error
+			return err
+		}
 	} else { // user exists
 		location = user.Location
-		devices = append(devices, user.Devices...) // combine existing and new devices
+		devices = helpers.MergeDevices(devices, user.Devices) // combine existing and new devices
 	}
 
 	sqlQuery := database.UpsertUserStatsSQL()
-	_, err = sm.DB.Exec(sqlQuery, s.Ip, location, s.VD_WebApp, s.FL_Portal, s.NM_Portal, s.TotalVisits, devices, s.FirstAccess, s.LastAccess)
+	_, err = sm.DB.Exec(sqlQuery, anonId, location, s.VD_WebApp, s.FL_Portal, s.NM_Portal, s.TotalVisits, devices, s.FirstAccess, s.LastAccess)
 	if err != nil {
 		return err
 	}
