@@ -84,17 +84,24 @@ func (sm *StatModel) UpsertUserStats(s *types.UserStat, region string) error {
 
 	if err != nil { 
 		if errors.Is(err, ErrNoRecord) { // user does not exist
-			location = sm.Geo.GetGeoLocation(s.Ip) // create new user location
+			if anonId != "invalid-ip" {
+				location = sm.Geo.GetGeoLocation(s.Ip) // create new user location
+			} else {
+				location = "N/A"
+			}
 		} else { // other error
 			return err
 		}
 	} else { // user exists
 		location = user.Location
 		devices = helpers.MergeDevices(devices, user.Devices) // combine existing and new devices
+		if user.Region != "" {
+			region = user.Region
+		}
 	}
 
 	sqlQuery := database.UpsertUserStatsSQL()
-	_, err = sm.DB.Exec(sqlQuery, anonId, location, s.VD_WebApp, s.FL_Portal, s.NM_Portal, s.TotalVisits, devices, s.FirstAccess, s.LastAccess)
+	_, err = sm.DB.Exec(sqlQuery, anonId, location, region, s.VD_WebApp, s.FL_Portal, s.NM_Portal, s.TotalVisits, devices, s.FirstAccess, s.LastAccess)
 	if err != nil {
 		return err
 	}

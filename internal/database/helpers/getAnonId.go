@@ -37,11 +37,11 @@ func getTruncatedIP(id string) string {
 	}
 
 	parts := strings.Split(expandedIp.String(), delimitter)
-	for len(parts) < 3 { // if the IP address has less than 4 octets, pad with 0s
+	for len(parts) < 3 { // if the IP address has less than 3 octets, pad with 0s
 		parts = append(parts, "0") 
 	}
 
-	newIp := parts[0]+parts[1]+parts[2]	// take the first 3 octets of the IP address, drop rest for privacy
+	newIp := parts[0]+parts[1]+parts[2]	// take the first 3 octets of the IP address, drop the rest for privacy
 
 	return newIp
 }
@@ -62,8 +62,10 @@ func generateUUID(stringHash, region string) string {
 
 	if region == "FL" { // get the UUID namespace based on the region
 		namespace = appConfig.FL_NS
-	} else {
+	} else if region == "NM" {
 		namespace = appConfig.NM_NS
+	} else {
+		namespace = appConfig.DEFAULT_NS
 	}
 	
 	id := uuid.NewSHA1(namespace, []byte(stringHash)) // generate a UUID based on the hash and the namespace

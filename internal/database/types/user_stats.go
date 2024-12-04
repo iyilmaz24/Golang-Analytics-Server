@@ -26,6 +26,7 @@ type Device struct {
 type UserStat struct {
 	Ip  string
 	Location string
+	Region string
 	VD_WebApp int
 	FL_Portal int
 	NM_Portal int
