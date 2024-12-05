@@ -2,15 +2,17 @@ package main
 
 import "net/http"
 
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/updateUserStats", app.updateUserStats)
-	mux.HandleFunc("/updateAppStats", app.updateAppStats)
+	mux.HandleFunc("/log-portal", app.upsertUserStats)
+	mux.HandleFunc("/log-website", app.updateAppStats)
 	mux.HandleFunc("/getAggregatedUserStats", app.getAggregatedUserStats)
 	mux.HandleFunc("/getAppStats", app.getAppStats)
 	mux.HandleFunc("/getStatsDbHealth", app.getStatsDbHealth)
 
-	return mux
+	handler := app.enableCORS(mux)
+
+	return handler
 }

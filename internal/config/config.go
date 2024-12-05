@@ -17,9 +17,7 @@ var (
 type Config struct {
 	DSN  string
 	Port string
-	FL_NS uuid.UUID
-	NM_NS uuid.UUID
-	DEFAULT_NS uuid.UUID
+	GLOBAL_NS uuid.UUID
 	Salt  string
 }
 
@@ -44,36 +42,22 @@ func LoadConfig() *Config {
 			port = ":8100"
 		}
 
-		fl_seed, ok := os.LookupEnv("FL_UUID_NAMESPACE_SEED")
+		global_seed, ok := os.LookupEnv("GLOBAL_UUID_NAMESPACE_SEED")
 		if !ok {
-			log.Fatal("FL_UUID_NAMESPACE_SEED is not set in environment variables")
+			log.Fatal("GLOBAL_UUID_NAMESPACE_SEED is not set in environment variables")
 		}
 
-		nm_seed, ok := os.LookupEnv("NM_UUID_NAMESPACE_SEED")
-		if !ok {
-			log.Fatal("NM_UUID_NAMESPACE_SEED is not set in environment variables")
-		}
-
-		default_seed, ok := os.LookupEnv("DEFAULT_UUID_NAMESPACE_SEED")
-		if !ok {
-			log.Fatal("DEFAULT_UUID_NAMESPACE_SEED is not set in environment variables")
-		}
-
-		salt, ok := os.LookupEnv("SALT")
+		salt, ok := os.LookupEnv("HASH_SALT")
 		if !ok {
 			log.Fatal("SALT is not set in environment variables")
 		}
 
-		fl_ns := stringToNamespaceUUID(fl_seed)
-		nm_ns := stringToNamespaceUUID(nm_seed)
-		default_ns := stringToNamespaceUUID(default_seed)
+		global_ns := stringToNamespaceUUID(global_seed)
 
 		instance = &Config{
 			DSN:  dsn,
 			Port: port,
-			FL_NS: fl_ns,
-			NM_NS: nm_ns,
-			DEFAULT_NS: default_ns,
+			GLOBAL_NS: global_ns,
 			Salt: salt,
 		}
 	})

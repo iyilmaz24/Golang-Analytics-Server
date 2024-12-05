@@ -10,7 +10,7 @@ import (
 	"github.com/iyilmaz24/Go-Analytics-Server/internal/config"
 )
 
-func GetAnonymousID(ip, region string) string { 
+func GetAnonymousID(ip string) string { 
 
 	truncatedIP := getTruncatedIP(ip) // truncate the IP address for privacy
 	if truncatedIP == "" { // if the IP address is invalid, return a default value
@@ -18,7 +18,7 @@ func GetAnonymousID(ip, region string) string {
 	}
 
 	stringHash := getStringHash(truncatedIP) // create a irreversible hash of the truncated IP address
-	anonID := generateUUID(stringHash, region) // generate a UUID based on the hash and the namespace for the region
+	anonID := generateUUID(stringHash) // generate a UUID based on the hash and the namespace for the region
 
 	return anonID
 }
@@ -56,17 +56,9 @@ func getStringHash(str string) string {
 	return hex.EncodeToString(hash[:]) // return the hash as a hex string
 }
 
-func generateUUID(stringHash, region string) string {
+func generateUUID(stringHash string) string {
 	appConfig := config.LoadConfig()
-	var namespace uuid.UUID 
-
-	if region == "FL" { // get the UUID namespace based on the region
-		namespace = appConfig.FL_NS
-	} else if region == "NM" {
-		namespace = appConfig.NM_NS
-	} else {
-		namespace = appConfig.DEFAULT_NS
-	}
+	namespace := appConfig.GLOBAL_NS
 	
 	id := uuid.NewSHA1(namespace, []byte(stringHash)) // generate a UUID based on the hash and the namespace
 

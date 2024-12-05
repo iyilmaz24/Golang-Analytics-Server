@@ -15,6 +15,7 @@ type Device struct {
 // stat := Stat{
 // 	Ip:            "192.168.1.1",
 // 	Location:      "New York, USA",
+// 	Region:        "NY",
 // 	VDWebAppVisits: 10,
 // 	FLPortalVisits: 5,
 // 	NMPortalVisits: 3,

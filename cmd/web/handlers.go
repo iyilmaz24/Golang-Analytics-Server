@@ -24,24 +24,30 @@ func (app *application) getAppStats(w http.ResponseWriter, r *http.Request) {
 	// implement the logic to get app stats
 }
 
-func (app *application) updateUserStats(w http.ResponseWriter, r *http.Request) {
+func (app *application) upsertUserStats(w http.ResponseWriter, r *http.Request) {
 	type RequestPayload struct {
-		Region string        `json:"region"`
 		Data   types.UserStat `json:"data"`
 	}
+	// Sample Payload From TypeScript Frontend: 
 	// {
-	// 	"region": "FL",
-	// 	"data": {
-	// 		"ip": "X.X.X.X"
-	// 		"location": "",
-	// 		"vd_webapp": 0,
-	// 		"fl_portal": 1,
-	// 		"nm_portal": 0,
-	// 		"total_visits": 1,
-	// 		"devices": [{Type: "desktop", OS: "windows", Browser: "chrome"}],
-	// 		"first_access": "2021-09-01T00:00:00Z",
-	// 		"last_access": "2021-09-01T00:00:00Z"
-	// 		}
+	// 	data: {
+	// 	  Ip: "",
+	// 	  Location: "",
+	// 	  Region: "FL",
+	// 	  VD_WebApp: 0,
+	// 	  FL_Portal: 1,
+	// 	  NM_Portal: 0,
+	// 	  TotalVisits: 1,
+	// 	  Devices: [
+	// 		{
+	// 		  Type: "Desktop",
+	// 		  OS: "macos",
+	// 		  Browser: "chrome",
+	// 		},
+	// 	  ] as Device[],
+	// 	  FirstAccess: new Date().toISOString(),
+	// 	  LastAccess: new Date().toISOString(),
+	// 	}
 	// }
 
 	var payload RequestPayload
@@ -52,7 +58,13 @@ func (app *application) updateUserStats(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = app.stats.UpsertUserStats(&payload.Data, payload.Region)
+	// userData := fmt.Sprintf("%+v", payload.Data.Devices)
+
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write([]byte(`{"message": "User stats updated successfully", "data": ` + userData + `}`))
+
+	err = app.stats.UpsertUserStats(&payload.Data)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to update user stats: `+err.Error()+`"}`, http.StatusInternalServerError)
 		return

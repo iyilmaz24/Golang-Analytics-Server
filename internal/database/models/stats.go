@@ -74,11 +74,12 @@ func (sm *StatModel) UpdateAppStats(s *types.AppStats) error {
 	return nil
 }
 
-func (sm *StatModel) UpsertUserStats(s *types.UserStat, region string) error {
+func (sm *StatModel) UpsertUserStats(s *types.UserStat) error {
 
-	anonId := helpers.GetAnonymousID(s.Ip, region)
+	anonId := helpers.GetAnonymousID(s.Ip)
 	user, err := sm.GetUserStats(anonId)
 
+	region := s.Region
 	devices := s.Devices
 	location := s.Location
 
