@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"runtime/debug"
 	"strings"
@@ -26,8 +25,6 @@ func (app *application) notFound (w http.ResponseWriter) {
 func getClientIP(r *http.Request) string {
 	xForwardedFor := r.Header.Get("X-Forwarded-For") // check X-Forwarded-For header from NGINX
 
-	log.Printf("X-Forwarded-For: %v", xForwardedFor)
-	
 	if xForwardedFor != "" {
 		ips := strings.Split(xForwardedFor, ",")
 		return strings.TrimSpace(ips[0]) // return the first IP address in the list
