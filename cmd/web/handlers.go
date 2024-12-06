@@ -58,11 +58,8 @@ func (app *application) upsertUserStats(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// userData := fmt.Sprintf("%+v", payload.Data.Devices)
-
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(`{"message": "User stats updated successfully", "data": ` + userData + `}`))
+	clientIp := getClientIP(r)	
+	payload.Data.Ip = clientIp
 
 	err = app.stats.UpsertUserStats(&payload.Data)
 	if err != nil {

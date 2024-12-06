@@ -2,3 +2,4 @@ tmp
 .env*
 internal/database/sql-queries.go
 aws-linux-build/golang-stats-server
+aws-linux-build/golang-analytics

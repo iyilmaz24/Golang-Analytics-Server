@@ -37,10 +37,11 @@ func LoadConfig() *Config {
 			log.Fatal("DB_DSN is not set in environment variables")
 		}
 
-		port, ok := os.LookupEnv("PORT")
-		if !ok {
-			port = ":8100"
-		}
+		port := ":8300"
+		// port, ok := os.LookupEnv("PORT")
+		// if !ok {
+		// 	port = ":8300"
+		// }
 
 		global_seed, ok := os.LookupEnv("GLOBAL_UUID_NAMESPACE_SEED")
 		if !ok {

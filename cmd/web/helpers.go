@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"runtime/debug"
+	"strings"
 )
 
 
@@ -19,4 +21,22 @@ func (app *application) clientError (w http.ResponseWriter, status int) {
 
 func (app *application) notFound (w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
+}
+
+func getClientIP(r *http.Request) string {
+	xForwardedFor := r.Header.Get("X-Forwarded-For") // check X-Forwarded-For header from NGINX
+
+	log.Printf("X-Forwarded-For: %v", xForwardedFor)
+	
+	if xForwardedFor != "" {
+		ips := strings.Split(xForwardedFor, ",")
+		return strings.TrimSpace(ips[0]) // return the first IP address in the list
+	}
+
+	xRealIP := r.Header.Get("X-Real-IP") // check X-Real-IP header from NGINX as fallback
+	if xRealIP != "" {
+		return xRealIP
+	}
+
+	return r.RemoteAddr // lastly, fallback to the remote address
 }

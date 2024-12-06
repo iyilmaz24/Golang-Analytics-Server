@@ -1,0 +1,20 @@
+
+
+# build a compatible Golang binary file for the AWS Linux 2023 runtime
+GOOS=linux GOARCH=amd64 go build -o golang-analytics ./cmd/web
+
+
+
+# import a file into ec2 from local folder (be in the local folder within terminal)
+scp -i <ssh-key-file-name>.pem golang-analytics ec2-user@<ec2-public-ip-address>:/home/ec2-user/
+
+    # in AWS Linux EC2 terminal - add execute permissions for Golang server binary
+    chmod +x golang-server
+
+
+
+# run the golang server's binary file on the EC2
+nohup env ./golang-analytics > analytics.log 2>&1 &
+tail -f analytics.log
+
+
