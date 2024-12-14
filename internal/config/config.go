@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/google/uuid"
@@ -19,6 +20,7 @@ type Config struct {
 	Port string
 	GLOBAL_NS uuid.UUID
 	Salt  string
+	Cors map[string]bool
 }
 
 func stringToNamespaceUUID(s string) uuid.UUID {
@@ -36,12 +38,18 @@ func LoadConfig() *Config {
 		if !ok {
 			log.Fatal("DB_DSN is not set in environment variables")
 		}
-
 		port := ":8300"
-		// port, ok := os.LookupEnv("PORT")
-		// if !ok {
-		// 	port = ":8300"
-		// }
+
+		corsString := os.Getenv("CORS_ORIGIN")
+		if corsString == "" {
+			log.Fatal("$CORS_ORIGIN env variable not set")
+		}
+		corsUrls := strings.Split(corsString, ",")
+
+		corsOrigin := make(map[string]bool)
+		for _, url := range corsUrls {
+			corsOrigin[url] = true
+		}
 
 		global_seed, ok := os.LookupEnv("GLOBAL_UUID_NAMESPACE_SEED")
 		if !ok {
@@ -60,6 +68,7 @@ func LoadConfig() *Config {
 			Port: port,
 			GLOBAL_NS: global_ns,
 			Salt: salt,
+			Cors: corsOrigin,
 		}
 	})
 

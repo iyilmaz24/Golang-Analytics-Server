@@ -17,7 +17,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	db.SetMaxIdleConns(3) 		// keeps up to 3 idle connections at a time on standby
+	db.SetMaxIdleConns(5) 		// keeps up to 5 idle connections at a time on standby
 	db.SetConnMaxLifetime(10 * time.Minute) 		// recycles connections every 10 minutes
 	
 	return db, nil

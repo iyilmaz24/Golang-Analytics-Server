@@ -18,7 +18,7 @@ func GetAnonymousID(ip string) string {
 	}
 
 	stringHash := getStringHash(truncatedIP) // create a irreversible hash of the truncated IP address
-	anonID := generateUUID(stringHash) // generate a UUID based on the hash and the namespace for the region
+	anonID := generateUUID(stringHash) // generate a UUID based on the hash and the namespace
 
 	return anonID
 }
