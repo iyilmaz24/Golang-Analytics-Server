@@ -127,12 +127,12 @@ func (sm *StatModel) UpsertUserStats(s *types.UserStat) error {
 }
 
 func (m *StatModel) CheckHealth() (*types.HealthCheck, error) {
-	err := m.DB.Ping()
 	status := "healthy"
+
+	err := m.DB.Ping()
 	if err != nil {
 		status = "unhealthy"
 	}
-
 	stats := m.DB.Stats()
 
 	return &types.HealthCheck{

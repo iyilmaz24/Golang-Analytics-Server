@@ -76,19 +76,24 @@ func (app *application) updateAppStats(w http.ResponseWriter, r *http.Request) {
 	// implement the logic to update app stats
 }
 
+// Lambda-optimized health check: Returns simple 200 OK / 5xx status based on DB ping.
 func (app *application) getStatsDbHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	stats, err := app.stats.CheckHealth()
+	// stats, err := app.stats.CheckHealth()
+	_, err := app.stats.CheckHealth()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(stats); err != nil {
-		app.errorLog.Printf("Could not encode health check response: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
+	w.Write([]byte(`{"status":"healthy"}`))
+
+	// if err := json.NewEncoder(w).Encode(stats); err != nil {
+	// 	app.errorLog.Printf("Could not encode health check response: %v", err)
+	// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// }
 }
+
 
