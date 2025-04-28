@@ -15,32 +15,32 @@ import (
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
-	stats  *models.StatModel
+	stats    *models.StatModel
 }
 
 func main() {
 
-	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	infoLog := log.New(os.Stdout, "***INFO LOG:\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "***ERROR LOG:\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	appConfig := config.LoadConfig()
 
-	db, err := database.OpenDB(appConfig.DSN)
+	db, err := database.OpenDB(appConfig.DbDsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
 	defer db.Close()
 
 	geo := &geo.Geo{
-		Api: "https://apip.cc/api-json/",
+		Api:      appConfig.GeoApi,
 		ErrorLog: errorLog,
-		InfoLog: infoLog,
+		InfoLog:  infoLog,
 	}
 
 	app := &application{
 		errorLog: errorLog,
-		infoLog: infoLog,
-		stats: &models.StatModel{DB: db, Geo: geo},
+		infoLog:  infoLog,
+		stats:    &models.StatModel{DB: db, Geo: geo},
 	}
 
 	srv := &http.Server{
@@ -53,6 +53,6 @@ func main() {
 
 	err = srv.ListenAndServe()
 	if err != nil {
-        errorLog.Fatal(err)
-    }
+		errorLog.Fatal(err)
+	}
 }
